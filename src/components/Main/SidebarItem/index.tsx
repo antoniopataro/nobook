@@ -21,7 +21,7 @@ function SidebarItem({ notebook }: SidebarItemProps) {
   const month = monthString.length === 1 ? "0" + monthString : monthString;
 
   return (
-    <SidebarItemStyles activeNotebook={pathname === notebook.slug} onClick={() => navigate(`/${notebook.id}`)}>
+    <SidebarItemStyles activeNotebook={pathname === notebook.slug} onClick={() => navigate(`/nobook/${notebook.id}`)}>
       <div className="top">
         <span>
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 
-import { NotebookProps, ToolbarProps } from "../../../contexts/NotebooksProvider";
-
 import ToolbarButton from "../ToolbarButton";
+
+import { useNavigate } from "react-router-dom";
+
+import { NotebookProps, ToolbarProps } from "../../../contexts/NotebooksProvider";
 
 import ToolbarStyles from "./styles";
 
@@ -14,6 +16,8 @@ interface ToolbarComponentProps {
 }
 
 function Toolbar({ notebook, editorRef, handleDeleteNotebook, updateNotebookToolbar }: ToolbarComponentProps) {
+  const navigate = useNavigate();
+
   const [bold, setBold] = useState(false);
   const [italic, setItalic] = useState(false);
   const [underline, setUnderline] = useState(false);
@@ -26,20 +30,8 @@ function Toolbar({ notebook, editorRef, handleDeleteNotebook, updateNotebookTool
     setStrikethrough(notebook?.toolbar?.strikethrough);
   }, [notebook]);
 
-  const focusOnEditor = (editorRef: React.RefObject<HTMLDivElement>) => {
-    const selection = window.getSelection();
-    const range = document.createRange();
-    selection?.removeAllRanges();
-    range.selectNodeContents(editorRef?.current!);
-    range.collapse(false);
-    selection?.addRange(range);
-    editorRef.current?.focus();
-  };
-
   const toggleBold = (e?: React.MouseEvent) => {
     e?.preventDefault();
-
-    focusOnEditor(editorRef);
 
     setBold((prevBold) => !prevBold);
     document.execCommand("bold");
@@ -53,8 +45,6 @@ function Toolbar({ notebook, editorRef, handleDeleteNotebook, updateNotebookTool
   const toggleItalic = (e?: React.MouseEvent) => {
     e?.preventDefault();
 
-    focusOnEditor(editorRef);
-
     setItalic((prevItalic) => !prevItalic);
     document.execCommand("italic");
 
@@ -67,8 +57,6 @@ function Toolbar({ notebook, editorRef, handleDeleteNotebook, updateNotebookTool
   const toggleUnderline = (e?: React.MouseEvent) => {
     e?.preventDefault();
 
-    focusOnEditor(editorRef);
-
     setUnderline((prevUnderline) => !prevUnderline);
     document.execCommand("underline");
 
@@ -80,8 +68,6 @@ function Toolbar({ notebook, editorRef, handleDeleteNotebook, updateNotebookTool
 
   const toggleStrikethrough = (e?: React.MouseEvent) => {
     e?.preventDefault();
-
-    focusOnEditor(editorRef);
 
     setStrikethrough((prevStrikethrough) => !prevStrikethrough);
     document.execCommand("strikethrough");
@@ -116,62 +102,45 @@ function Toolbar({ notebook, editorRef, handleDeleteNotebook, updateNotebookTool
         e.preventDefault();
         toggleStrikethrough();
       }
+
+      if (document.queryCommandState("bold")) {
+        setBold(true);
+        return;
+      }
+
+      setBold(false);
+
+      if (document.queryCommandState("italic")) {
+        setItalic(true);
+        return;
+      }
+
+      setItalic(false);
+
+      if (document.queryCommandState("underline")) {
+        setUnderline(true);
+        return;
+      }
+
+      setUnderline(false);
+
+      if (document.queryCommandState("strikethrough")) {
+        setStrikethrough(true);
+        return;
+      }
+
+      setStrikethrough(false);
     },
     [notebook],
   );
 
-  const handlePaste = useCallback(
-    (e: any) => {
-      e.preventDefault();
-
-      const text = e.clipboardData?.getData("text/plain");
-
-      const selectedRange = window.getSelection()?.getRangeAt(0);
-
-      if (!selectedRange || !text) return;
-
-      try {
-        new URL(text);
-
-        selectedRange?.deleteContents();
-
-        const notEditable = document.createElement("div");
-        notEditable.contentEditable = "false";
-        notEditable.style.display = "inline-block";
-        notEditable.style.width = "fit-content";
-
-        const urlSpan = document.createElement("a");
-
-        urlSpan.innerText = text;
-        urlSpan.style.color = `#${notebook?.color}`;
-        urlSpan.href = text;
-        urlSpan.target = "_blank";
-
-        notEditable.appendChild(urlSpan);
-
-        selectedRange?.insertNode(notEditable);
-        selectedRange?.setStart(selectedRange?.endContainer, selectedRange?.endOffset);
-        selectedRange?.insertNode(document.createTextNode(" "));
-
-        return;
-      } catch (e) {
-        selectedRange.deleteContents();
-        selectedRange.insertNode(document.createTextNode(text));
-        selectedRange.setStart(selectedRange.endContainer, selectedRange.endOffset);
-      }
-    },
-    [notebook?.color],
-  );
-
   useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("paste", handlePaste);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("paste", handlePaste);
     };
-  }, [handleKeyDown, handlePaste]);
+  }, [handleKeyDown]);
 
   return (
     <ToolbarStyles>
@@ -207,7 +176,7 @@ function Toolbar({ notebook, editorRef, handleDeleteNotebook, updateNotebookTool
       </menu>
       <menu className="right">
         <li>
-          <button>
+          <button onClick={() => navigate("/nobook/settings/about")}>
             <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
               <mask id="path-1-outside-1_11_64" maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="16">
                 <rect fill="white" width="16" height="16" />

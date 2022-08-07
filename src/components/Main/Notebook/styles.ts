@@ -1,6 +1,10 @@
 import styled from "styled-components";
 
-const NotebookStyles = styled.main`
+interface NotebookStylesProps {
+  notebookColor: string;
+}
+
+const NotebookStyles = styled.main<NotebookStylesProps>`
   display: flex;
   flex-direction: column;
 
@@ -15,6 +19,8 @@ const NotebookStyles = styled.main`
   background-color: var(--bg);
 
   .editor {
+    display: inline-block;
+
     width: 100%;
     height: 100%;
 
@@ -42,10 +48,16 @@ const NotebookStyles = styled.main`
       height: 0;
     }
 
+    tag {
+      color: #${(props) => props.notebookColor};
+    }
+
     a {
       cursor: pointer;
 
       pointer-events: auto;
+
+      color: #${(props) => props.notebookColor};
     }
   }
 `;

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
+import React, { useRef, useContext, useEffect, useCallback } from "react";
 
 import Toolbar from "../Toolbar";
 import NotebookTitle from "../NotebookTitle";
@@ -13,14 +13,8 @@ function Notebook() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const {
-    notebooks,
-    updateNotebookTitle,
-    updateNotebookHtmlContent,
-    updateNotebookTags,
-    updateNotebookToolbar,
-    deleteNotebook,
-  } = useContext(Notebooks);
+  const { notebooks, updateNotebookTitle, updateNotebookHtmlContentAndTags, updateNotebookToolbar, deleteNotebook } =
+    useContext(Notebooks);
 
   const notebook = notebooks.filter((notebook) => notebook.slug === pathname)[0];
 
@@ -29,18 +23,16 @@ function Notebook() {
 
     if (!notebookIds.includes(notebook?.id)) {
       if (notebookIds.length === 0) {
-        navigate("/");
+        navigate("/nobook/");
         return;
       }
 
-      navigate(notebookIds[0]);
+      navigate(`/nobook/${notebookIds[0]}`);
     }
   }, [pathname, notebooks]);
 
   const titleRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
-
-  const [tags, setTags] = useState<string[]>([]);
 
   const handleUpdateNotebookTitle = () => {
     const title = titleRef.current?.textContent;
@@ -50,39 +42,137 @@ function Notebook() {
     updateNotebookTitle(title, notebook?.id);
   };
 
-  const handleUpdateNotebookHtmlContent = () => {
-    const htmlContent = editorRef.current?.innerHTML;
+  const handleUpdateNotebookHtmlContentAndTags = () => {
+    const htmlContent = editorRef.current?.innerHTML!;
+    const htmlChildNodes = editorRef.current?.childNodes;
 
-    if (!htmlContent) return;
+    var currentTags: string[] = [];
 
-    handleUpdateTags();
-    updateNotebookHtmlContent(htmlContent, notebook?.id);
-  };
+    htmlChildNodes?.forEach((node) => {
+      if (node.nodeName === "TAG") {
+        currentTags.push(node.textContent!);
+      }
+    });
 
-  const handleUpdateTags = () => {
-    const text = editorRef.current?.textContent;
-
-    if (!text) return;
-
-    const splittedText = text.split(" ");
-    const splittedTextMiddleware = splittedText.map((word) => word.split("\n"));
-    const cleanSplittedText = splittedTextMiddleware.reduce((prev, curr) => prev.concat(curr));
-
-    const currentTags = cleanSplittedText.filter((word) => word[0] === "#");
-
-    if (currentTags === tags) return;
-
-    setTags(currentTags);
-    updateNotebookTags(currentTags, notebook?.id);
+    updateNotebookHtmlContentAndTags(htmlContent, currentTags, notebook?.id);
   };
 
   const handleDeleteNotebook = () => {
-    navigate(-1);
     deleteNotebook(notebook?.id);
+
+    if (notebooks.length === 1) {
+      navigate("/nobook/");
+      return;
+    }
+
+    navigate(-1);
   };
 
+  const handleRefresh = (e: BeforeUnloadEvent) => {
+    e.preventDefault();
+
+    editorRef.current?.blur();
+    titleRef.current?.blur();
+  };
+
+  const handlePaste = useCallback(
+    (e: any) => {
+      e.preventDefault();
+
+      const editingNotebook = editorRef.current === document.activeElement;
+
+      if (!editingNotebook) return;
+
+      const text = e.clipboardData?.getData("text/plain");
+
+      const selectedRange = window.getSelection()?.getRangeAt(0);
+
+      if (!selectedRange || !text) return;
+
+      try {
+        new URL(text);
+
+        document.execCommand(
+          "insertHTML",
+          false,
+          `<div contentEditable="false" style="display: inline-block"><a href=${text} target="_blank">${text}</a></div>`,
+        );
+
+        const selection = document.getSelection();
+        const existingNode = selection?.anchorNode?.parentNode?.parentNode;
+
+        existingNode?.parentNode?.insertBefore(document.createTextNode(" "), existingNode.nextSibling);
+
+        const range = document.createRange();
+        selection?.removeAllRanges();
+        range.selectNodeContents(existingNode?.nextSibling!);
+        range.collapse(false);
+        selection?.addRange(range);
+
+        return;
+      } catch (e) {
+        document.execCommand("insertText", false, text);
+      }
+    },
+    [notebook, editorRef],
+  );
+
+  const handleKeyDown = useCallback(
+    (e: any) => {
+      const key = e.key.toLowerCase();
+      const ctrl = e.ctrlKey;
+
+      const selection = document.getSelection();
+      const editingNotebook = editorRef.current === document.activeElement;
+
+      if (!editingNotebook) return;
+
+      if (key === "#") {
+        e.preventDefault();
+
+        const tag = document.createElement("tag");
+        tag.appendChild(document.createTextNode("#"));
+
+        document.execCommand("insertHTML", false, tag.outerHTML);
+      }
+
+      if (key === " " && selection?.anchorNode?.parentNode?.nodeName === "TAG") {
+        e.preventDefault();
+
+        const existingNode = selection.anchorNode.parentNode;
+
+        existingNode.parentNode?.insertBefore(document.createTextNode(" "), existingNode.nextSibling);
+
+        const range = document.createRange();
+        selection?.removeAllRanges();
+        range.selectNodeContents(existingNode.nextSibling!);
+        range.collapse(false);
+        selection?.addRange(range);
+      }
+
+      if (key === "enter") {
+        e.preventDefault();
+
+        document.execCommand("insertHTML", false, "<br/><br/>");
+      }
+    },
+    [editorRef],
+  );
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", handleRefresh, { capture: true });
+    window.addEventListener("paste", handlePaste);
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleRefresh, { capture: true });
+      window.removeEventListener("paste", handlePaste);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
   return (
-    <NotebookStyles>
+    <NotebookStyles notebookColor={notebook?.color}>
       <Toolbar
         notebook={notebook}
         updateNotebookToolbar={updateNotebookToolbar}
@@ -96,7 +186,7 @@ function Notebook() {
         contentEditable
         data-placeholder="Type here..."
         dangerouslySetInnerHTML={notebook?.htmlContent ? { __html: notebook?.htmlContent } : { __html: "" }}
-        onBlur={handleUpdateNotebookHtmlContent}
+        onBlur={handleUpdateNotebookHtmlContentAndTags}
       />
     </NotebookStyles>
   );

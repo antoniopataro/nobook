@@ -26,6 +26,30 @@ const SidebarStyles = styled.aside`
     flex-direction: column;
 
     width: 100%;
+
+    gap: 30px;
+
+    opacity: 0;
+    animation: slideDown20 0.5s ease forwards;
+
+    li {
+      list-style: none;
+
+      padding: 8px 16px;
+
+      border-radius: 4px;
+
+      cursor: pointer;
+
+      transition: 0.15s ease;
+      transition-property: background-color;
+
+      background-color: transparent;
+
+      :hover {
+        background-color: #d9d9d9;
+      }
+    }
   }
 
   button {

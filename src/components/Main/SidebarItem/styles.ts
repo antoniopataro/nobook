@@ -28,7 +28,7 @@ const SidebarItemStyles = styled.li<SidebarItemStylesProps>`
   transition-property: border-color;
 
   opacity: 0;
-  animation: slideDown20 0.5s ease forwards;
+  animation: slideDown20 0.5s ease forwards 0.25s;
 
   :hover {
     border-color: #404040;

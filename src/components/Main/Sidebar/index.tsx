@@ -11,6 +11,7 @@ function Sidebar() {
 
   return (
     <SidebarStyles>
+      <h3>nobook</h3>
       <ul>
         {notebooks.map((notebook) => (
           <SidebarItem key={notebook.id} notebook={notebook} />

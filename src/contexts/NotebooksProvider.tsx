@@ -24,8 +24,7 @@ interface NotebooksProps {
   notebooks: NotebookProps[];
   createNotebook: () => void;
   updateNotebookTitle: (title: string, id: string) => void;
-  updateNotebookHtmlContent: (htmlContent: string, id: string) => void;
-  updateNotebookTags: (tags: string[], id: string) => void;
+  updateNotebookHtmlContentAndTags: (htmlContent: string, tags: string[], id: string) => void;
   updateNotebookToolbar: (toolbar: ToolbarProps, id: string) => void;
   deleteNotebook: (id: string) => void;
 }
@@ -96,22 +95,10 @@ function NotebooksProvider({ children }: NotebooksProviderProps) {
     localStorage.setItem("userNotebooks", JSON.stringify(newNotebooks));
   };
 
-  const updateNotebookHtmlContent = (htmlContent: string, id: string) => {
+  const updateNotebookHtmlContentAndTags = (htmlContent: string, tags: string[], id: string) => {
     const newNotebooks = notebooks.map((notebook) => {
       if (notebook.id === id) {
-        return { ...notebook, htmlContent: htmlContent };
-      }
-      return notebook;
-    });
-
-    setNotebooks(newNotebooks);
-    localStorage.setItem("userNotebooks", JSON.stringify(newNotebooks));
-  };
-
-  const updateNotebookTags = (tags: string[], id: string) => {
-    const newNotebooks = notebooks.map((notebook) => {
-      if (notebook.id === id) {
-        return { ...notebook, tags: tags };
+        return { ...notebook, htmlContent: htmlContent, tags: tags };
       }
       return notebook;
     });
@@ -158,8 +145,7 @@ function NotebooksProvider({ children }: NotebooksProviderProps) {
         notebooks,
         createNotebook,
         updateNotebookTitle,
-        updateNotebookHtmlContent,
-        updateNotebookTags,
+        updateNotebookHtmlContentAndTags,
         updateNotebookToolbar,
         deleteNotebook,
       }}
