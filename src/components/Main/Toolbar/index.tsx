@@ -10,12 +10,11 @@ import ToolbarStyles from "./styles";
 
 interface ToolbarComponentProps {
   notebook: NotebookProps;
-  editorRef: React.RefObject<HTMLDivElement>;
   updateNotebookToolbar: (toolbar: ToolbarProps, id: string) => void;
   handleDeleteNotebook: () => void;
 }
 
-function Toolbar({ notebook, editorRef, handleDeleteNotebook, updateNotebookToolbar }: ToolbarComponentProps) {
+function Toolbar({ notebook, handleDeleteNotebook, updateNotebookToolbar }: ToolbarComponentProps) {
   const navigate = useNavigate();
 
   const [bold, setBold] = useState(false);
