@@ -16,7 +16,7 @@ function Notebook() {
   const { notebooks, updateNotebookTitle, updateNotebookHtmlContentAndTags, updateNotebookToolbar, deleteNotebook } =
     useContext(Notebooks);
 
-  const notebook = notebooks.filter((notebook) => notebook.slug === pathname)[0];
+  const notebook = notebooks.filter((notebook) => notebook.slug === "/" + pathname.split("/")[2])[0];
 
   useEffect(() => {
     const notebookIds = notebooks.map((notebook) => notebook.id);
@@ -29,7 +29,7 @@ function Notebook() {
 
       navigate(`/nobook/${notebookIds[0]}`);
     }
-  }, [pathname, notebooks]);
+  }, [pathname, notebook, notebooks]);
 
   const titleRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
@@ -176,7 +176,6 @@ function Notebook() {
       <Toolbar
         notebook={notebook}
         updateNotebookToolbar={updateNotebookToolbar}
-        editorRef={editorRef}
         handleDeleteNotebook={handleDeleteNotebook}
       />
       <NotebookTitle handleUpdateNotebookTitle={handleUpdateNotebookTitle} titleRef={titleRef} notebook={notebook} />
