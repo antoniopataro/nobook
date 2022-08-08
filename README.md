@@ -1,8 +1,8 @@
 ⚠️ This is currently **under construction!**
 
-https://user-images.githubusercontent.com/87823281/182415449-1b95441c-1a50-487d-82dc-18fda233bd65.mp4
+https://user-images.githubusercontent.com/87823281/183526264-13a57d63-4df0-4884-833e-490928e039a9.mp4
 
-# 📒 ️nobook
+# 📖 ️nobook
 
 This is a simple notebook app focused on providing a delightful user experience.
 
