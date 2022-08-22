@@ -15,7 +15,7 @@ It was supposed to be a microSaaS, but I'm currently facing some issues related 
 - `ReactJS` [↗](https://reactjs.org/) as framework
 - `Styled Components` [↗](https://styled-components.com/) as styling framework
 - `uuid` [↗](https://v5.reactrouter.com/) to generate random IDs
-- `react-router-dom` [↗](https://v5.reactrouter.com/) to facilitate requests
+- `react-router-dom` [↗](https://v5.reactrouter.com/) to manage routing
 
 <div style="display: inline_block" align="center"><br>
   <a href="https://vitejs.dev/" target="_blank">
