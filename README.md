@@ -10,13 +10,18 @@ It was supposed to be a microSaaS, but I'm currently facing some issues related 
 
 ### ⚙️ Technologies
 
-I created this project using `Vite` as its plugin. Chose `React` as framework and used `Typescript`, of course.
+- `Vite` [↗](https://vitejs.dev/) as plugin
+- `Typescript` [↗](https://www.typescriptlang.org/) as language
+- `ReactJS` [↗](https://reactjs.org/) as framework
+- `Styled Components` [↗](https://styled-components.com/) as styling framework
+- `uuid` [↗](https://v5.reactrouter.com/) to generate random IDs
+- `react-router-dom` [↗](https://v5.reactrouter.com/) to facilitate requests
 
-Styled the project using `styled-components`, used `uuidv4` for unique IDs to each notebook and `react-router-dom` to manage routing.
-
-<div style="display: inline_block"><br>
-<img align="center" title="ReactJS" alt="ReactJS" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original.svg">
-  <img align="center" title="Typescript" alt="Typescript" height="30" width="40" src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-plain.svg">
-  <img align="center" title="Styled Components" alt="Styled Components" height="30" width="40" src="https://user-images.githubusercontent.com/87823281/180796443-4c332fa5-94c7-4aa2-a9b3-775d16e62f62.svg">
-  <img align="center" title="React Router DOM" alt="React Router DOM" height="30" width="40" src="https://user-images.githubusercontent.com/87823281/180800593-c0b6e072-a545-4d3c-a535-8941215bdaf8.svg">
+<div style="display: inline_block" align="center"><br>
+  <a href="https://vitejs.dev/" target="_blank">
+      <img align="center" title="ViteJS" alt="ViteJS" height="45" width="40" src="https://user-images.githubusercontent.com/87823281/182053707-047fc95d-6891-427b-9a98-065b20a25a30.svg"></a>
+<a href="https://www.typescriptlang.org/" target="_blank">
+  <img align="center" title="Typescript" alt="Typescript" height="45" width="40" src="https://user-images.githubusercontent.com/87823281/181045174-aeefe104-3966-491c-8d95-23f43050dbd0.svg"></a>
+    <a href="https://reactjs.org/" target="_blank">
+  <img align="center" title="ReactJS" alt="ReactJS" height="45" width="40" src="https://user-images.githubusercontent.com/87823281/181045172-a17b3a91-5442-4487-927e-0bd2920458b0.svg"></a>
 </div>
